@@ -1,10 +1,11 @@
 #chess game
 #grid based GUI
 #grid() and pack() CANNOT be mixed
-
+import tkinter
 #imports
 #PIL is pillow
-import tkinter as tkin
+import tkinter as tk
+from tkinter import ttk
 from PIL import ImageTk,Image
 #from pygame import mixer
 import random
@@ -18,7 +19,7 @@ import os.path
 
 
 #master root and window
-root = tkin.Tk()
+root = tk.Tk()
 root.title("Louise's 2D Chess")
 root.geometry("1300x1000")
 
@@ -26,15 +27,23 @@ root.geometry("1300x1000")
 script_dir = os.path.dirname(os.path.abspath(__file__))
 
 #title
-header = tkin.Label(root,text="2D Chess",)
+header = tk.Label(root, text="2D Chess", )
 header.config(font=("courier",20))
 header.grid(column=0,row=0)
+
+grid_frame = ttk.Frame(root)
+grid_frame.columnconfigure()
+
+# display label of who's turn it is
+labelText = tk.StringVar()
+playerText = tk.Label(root, textvariable=labelText)
+playerText.grid(column=10, row=0)
 
 def roundLabel():
         global moveNo
 
-        roundText = tkin.Label(root,text="MOVE")
-        roundNo = tkin.Label(root,text=moveNo)
+        roundText = tk.Label(root, text="MOVE")
+        roundNo = tk.Label(root, text=moveNo)
         roundText.grid(column=0,row=9,sticky="w")
         roundNo = roundNo.grid(column=0,row=9)
 
@@ -49,7 +58,7 @@ def labelTop():
         topLabels = ["A","B","C","D","E","F","G","H"]
         count=1
         for letter in topLabels:
-                letter = tkin.Label(root,text=letter)
+                letter = tk.Label(root, text=letter)
                 letter.grid(column=count,row=0,sticky="S")
                 count+=1
 
@@ -59,13 +68,13 @@ def labelSide():
         sideLabels+= range(8,0,-1)
         count=1
         for num in sideLabels:
-                num = tkin.Label(root,text=num)
+                num = tk.Label(root, text=num)
                 num.grid(column=0,row=count,sticky="E")
                 count+=1
 
 def padding():        
         #left padding #####################
-        lLabel = tkin.Label(root)
+        lLabel = tk.Label(root)
         lLabel.grid(column=0,ipadx=50)
 
 def makeBoardCanvases():
@@ -97,12 +106,12 @@ def makeBoardCanvases():
         #this preserves transparency and makes it easier
         for var in blackSquares:
             ind = blackSquares.index(var)
-            blackSquares[ind] = tkin.Canvas(root, width=110,height=110,border=0,bg="brown",cursor="hand2")
+            blackSquares[ind] = tk.Canvas(grid_frame, width=110, height=110, border=0, bg="brown", cursor="hand2")
             #blackSquares[ind].create_image(50,50,image=)
             
         for var in whiteSquares:
             ind = whiteSquares.index(var)
-            whiteSquares[ind] = tkin.Canvas(root, width=110,height=110,border=0,bg="white",cursor="hand2")
+            whiteSquares[ind] = tk.Canvas(grid_frame, width=110, height=110, border=0, bg="white", cursor="hand2")
             #whiteSquares[ind].create_image(50,50,image=)
             
         return blackSquares,whiteSquares
@@ -2024,8 +2033,8 @@ def doMove(event,origSquare,possibleMoves):
         global moveNo
         moveNo += 1
 
-        roundText = tkin.Label(root, text="MOVE")
-        roundNo = tkin.Label(root, text=moveNo)
+        roundText = tk.Label(root, text="MOVE")
+        roundNo = tk.Label(root, text=moveNo)
         roundText.grid(column=0, row=9, sticky="w")
         roundNo = roundNo.grid(column=0, row=9)
 
@@ -2084,9 +2093,7 @@ def pickPiece(setMove,places,origSquare):
                 places = bPlaces
                 playerGo = "It's black's move."
 
-        #display label of who's turn it is
-        playerText = tkin.Label(root, text=playerGo)
-        playerText.grid(column=10, row=0)
+        labelText.set(playerGo)
 
         #do this time
         for piece in places:
@@ -2203,12 +2210,12 @@ def playerMove(event,active,board,boardObjectSpaces):
 def winLose(otherPiece):
         #if king dies
 
-        popup = tkin.Tk()
+        popup = tk.Tk()
         popup.geometry("1000x800")
 
         popup.wm_title("You WIN!!!")
 
-        label = tkin.Label(popup, font=("Helvetica", 100))
+        label = tk.Label(popup, font=("Helvetica", 100))
 
         if otherPiece.color == "b":
                 #white wins
@@ -2464,6 +2471,11 @@ places = pickPiece(setMove,places,origSquare=board[1])
 #[["w",1],["b",1],]
 
 #main
+scrll = ttk.Scrollbar(grid_frame, orient=tk.VERTICAL)
+scrll.grid(column=10, row=0, rowspan=100)
+
+grid_frame.grid(column=0, row=0)
+
 root.mainloop()
 
 
